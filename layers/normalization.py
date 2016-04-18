@@ -21,7 +21,7 @@ class LocalResponseNormalizationLayer(object):
         self.layer_type = 'lrn'
 
         if self.n % 2 == 0:
-            print 'Warning: n should be odd for LRN layer.'
+            print('Warning: n should be odd for LRN layer.')
 
     def forward(self, V, in_training):
         self.in_act = V
@@ -29,14 +29,14 @@ class LocalResponseNormalizationLayer(object):
         self.S_cache = V.cloneAndZero()
         n2 = self.n / 2
 
-        for x in xrange(V.sx):
-            for y in xrange(V.sy):
-                for i in xrange(V.depth):
+        for x in range(V.sx):
+            for y in range(V.sy):
+                for i in range(V.depth):
                     a_i = V.get(x, y, i)
 
                     # Normalize in a window of size n
                     den = 0.0
-                    for j in xrange(max(0, i - n2), min(i + n2, V.depth - 1) + 1):
+                    for j in range(max(0, i - n2), min(i + n2, V.depth - 1) + 1):
                         u_f = V.get(x, y, j)
                         den += u_f * u_f
                     den *= self.alpha / (float(self.n) ** 2)
@@ -56,16 +56,16 @@ class LocalResponseNormalizationLayer(object):
         A = self.out_act
         n2 = self.n / 2
 
-        for x in xrange(V.sx):
-            for y in xrange(V.sy):
-                for i in xrange(V.depth):
+        for x in range(V.sx):
+            for y in range(V.sy):
+                for i in range(V.depth):
                     chain_grad = self.out_act.get_grad(x, y, i)
                     S = self.S_cache.get(x, y, i)
                     S_b = S ** self.beta
                     S_b2 = S_b * S_b
 
                     # Normalize in a window of size n
-                    for j in xrange(max(0, i - n2), min(i + n2, V.depth - 1) + 1):
+                    for j in range(max(0, i - n2), min(i + n2, V.depth - 1) + 1):
                         a_j = V.get(x, y, j)
                         grad = -(a_j ** 2) * self.beta * (S ** (self.beta - 1)) * self.alpha / self.n * 2.0 
                         if j == i:

@@ -20,7 +20,7 @@ class SimilarityLayer(object):
         self.layer_type = 'sim'
 
         bias = getopt(opt, 'bias_pref', 0.0)
-        self.filters = [ Vol(1, 1, self.num_inputs) for i in xrange(self.out_depth) ]
+        self.filters = [ Vol(1, 1, self.num_inputs) for i in range(self.out_depth) ]
         self.biases = Vol(1, 1, self.out_depth, bias)
 
     def forward(self, V, in_training):
@@ -34,10 +34,10 @@ class SimilarityLayer(object):
         normv = norm(Vw)
 
         # compute cos sim between V and filters
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             sum_a = 0.0
             fiw = self.filters[i].w
-            for d in xrange(self.num_inputs):
+            for d in range(self.num_inputs):
                 sum_a += Vw[d] * fiw[d]
             sum_a += self.biases.w[i] # dot(W, v) + b
             
@@ -55,11 +55,11 @@ class SimilarityLayer(object):
         V.dw = zeros(len(V.w)) # zero out gradient
 
         # compute gradient wrt weights and data
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             fi = self.filters[i]
             chain_grad = self.out_act.dw[i]
 
-            for d in xrange(self.num_inputs):
+            for d in range(self.num_inputs):
                 V.dw[d] += fi.w[d] * chain_grad #grad wrt input data
                 fi.dw[d] += V.w[d] * chain_grad #grad wrt params
 
@@ -67,7 +67,7 @@ class SimilarityLayer(object):
 
     def getParamsAndGrads(self):
         response = []
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             response.append({
                 'params': self.filters[d].w,
                 'grads': self.filters[d].dw,
@@ -122,7 +122,7 @@ class MexLayer(object):
 
         self.zeta = getopt(opt, 'zeta', 1.0)
         if self.zeta == 0.0:
-            print 'WARNING: zeta cannot equal 0'
+            print('WARNING: zeta cannot equal 0')
 
         self.layer_type = 'mex'
 
@@ -131,7 +131,7 @@ class MexLayer(object):
         V2 = Vol(self.out_sx, self.out_sy, self.out_depth, 0.0)
 
         sexp = 0.0
-        for i in xrange(len(V2.w)):
+        for i in range(len(V2.w)):
             sexp += exp(V.w[i])
             V2.w[i] = log((sexp / (i + 1))) / self.zeta
 
@@ -145,7 +145,7 @@ class MexLayer(object):
         V2 = self.out_act
         N = len(V.w)
         V.dw = zeros(N) # zero out gradient wrt data
-        for i in xrange(N):
+        for i in range(N):
             if V2.w[i] <= 0: # threshold
                 V.dw[i] = 0
             else:

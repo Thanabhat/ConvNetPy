@@ -2,7 +2,7 @@ from sys import argv
 
 # MNIST test #classic
 if '--mnist' in argv:
-    from examples.mnist import *
+    from .examples.mnist import *
     start('--conv' in argv)
     train()
     try: 
@@ -14,34 +14,34 @@ if '--mnist' in argv:
 
 # random 2D data classification test
 if '--toy2D' in argv:
-    from examples.toy2D import *
+    from .examples.toy2D import *
     train()
     test()
 
 # Cifar10 test
 if '--cifar10' in argv:
-    from examples.cifar.cifar10 import *
+    from .examples.cifar.cifar10 import *
     start('-conv' in argv, '-crop' in argv, '-gray' in argv)
     train()
     test()
 
 # Cifar10 autoencoder
 if '--cifar10-ae' in argv:
-    from examples.cifar.autoencoder import *
+    from .examples.cifar.autoencoder import *
     start('-conv' in argv, '-crop' in argv, '-gray' in argv)
     train()
     test()
 
 # Learns to predict the next letter in a sequence (trained on trigrams)
 if '--nextletter' in argv:
-    from examples.next_letter import *
+    from .examples.next_letter import *
     start()
     train()
     test()
 
 # Autoencode mnist digits, display them with opencv
 if '--autoencoder' in argv:
-    from examples.autoencoder import *
+    from .examples.autoencoder import *
     start()
     train()
     
@@ -58,7 +58,7 @@ if '--autoencoder' in argv:
 # from project gutenberg to do topic modeling
 # (using the assumption that words with highest activation == topics)
 if '--topics' in argv:
-    from examples.topics import *
+    from .examples.topics import *
     start()
     train()
     test()
@@ -67,14 +67,14 @@ if '--topics' in argv:
 # from project gutenberg to do semantic similarity search
 # cos(v, qv) for v in doc, v = wieghts of 10 neuron sigmoid ("compressed code of text")
 if '--sim' in argv:
-    from examples.similarity import *
+    from .examples.similarity import *
     start()
     train()
     test()
 
 # Classify iris dataset, requires scikit-learn
 if '--iris' in argv:
-    from examples.iris import *
+    from .examples.iris import *
     load_data()
     start()
     train()
@@ -82,7 +82,7 @@ if '--iris' in argv:
 
 # Classify labeled faces in the wild, requires scikit-learn
 if '--faces' in argv:
-    from examples.faces import *
+    from .examples.faces import *
     load_data()
     start()
     train()
@@ -90,21 +90,21 @@ if '--faces' in argv:
 
 # Predict next word from bigram model
 if '--nextword' in argv:
-    from examples.next_word import *
+    from .examples.next_word import *
     start()
     train()
     test()
 
 # Predict dialogue class from frequency distribution of text
 if '--dialogue' in argv:
-    from examples.dialogue import *
+    from .examples.dialogue import *
     start()
     train()
     test()
 
 # Predict next word based on word embeddings
 if '--nextworde' in argv:
-    from examples.next_word_embeddings import *
+    from .examples.next_word_embeddings import *
     start()
     train()
     test()
@@ -112,7 +112,7 @@ if '--nextworde' in argv:
 # Predict 1 of 4 sentiment tags, kaggle challenge
 # https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews
 if '--sentiment' in argv:
-    from examples.sentiment import *
+    from .examples.sentiment import *
     start()
     train()
     test()
@@ -124,17 +124,17 @@ if '--sentiment' in argv:
 # as inputs to smaller neural net -- pretty amazing results
 # Larger net has already learned a sort of similarity function btw. inputs
 if '--dark-knowledge' in argv:
-    from examples.dark_knowledge import *
+    from .examples.dark_knowledge import *
     run_big_net()
     run_small_net()
 
 if '--udacity-terrain' in argv:
-    from examples.udacity_terrain import *
+    from .examples.udacity_terrain import *
     train()
     test()
 
 if '--darkencoder' in argv:
-    from examples.darkencoder import *
+    from .examples.darkencoder import *
     start()
     train()
     train2()
@@ -142,27 +142,27 @@ if '--darkencoder' in argv:
 
 # Autoencode mnist digits, display them in 2D with opencv
 if '--autoencoder-vis' in argv:
-    from examples.autoencoder_vis import *
+    from .examples.autoencoder_vis import *
     start()
     test()
     train()
     test()
 
 if '--titanic' in argv:
-    from examples.titanic import *
+    from .examples.titanic import *
     load_data()
     start()
     train()
     test()
 
 if '--mnist-n2i' in argv:
-    from examples.num2img import *
+    from .examples.num2img import *
     start()
     train()
     test()
 
 if '--tae' in argv:
-    from examples.transforming_autoencoder import start, train, test
+    from .examples.transforming_autoencoder import start, train, test
     start()
     train()
     test()

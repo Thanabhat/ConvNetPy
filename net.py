@@ -35,16 +35,16 @@ class Net(object):
 
         # Checks
         if len(layers) < 2:
-            print 'Error: Net must have at least one input and one softmax layer.'
+            print('Error: Net must have at least one input and one softmax layer.')
         if layers[0]['type'] != 'input':
-            print 'Error: First layer should be input.'
+            print('Error: First layer should be input.')
 
         # Add activations and dropouts
         def addExtraLayers():
             newLayers = []
             for layer in layers:
                 layerType = layer['type']
-                layerKeys = layer.keys()
+                layerKeys = list(layer.keys())
 
                 if layerType == 'softmax' or layerType == 'svm':
                     # add an fc layer
@@ -79,7 +79,7 @@ class Net(object):
                             'group_size': layer['group_size'] if group_size in layerKeys else 2
                         })
                     else:
-                        print 'Error: Unsupported activation'
+                        print('Error: Unsupported activation')
 
                 if 'drop_prob' in layerKeys and layerType != 'dropout':
                     newLayers.append({
@@ -102,7 +102,7 @@ class Net(object):
         all_layers = addExtraLayers()
 
         # Create the layers
-        for i in xrange(len(all_layers)):
+        for i in range(len(all_layers)):
             layer = all_layers[i]
             if i > 0:
                 prev = self.layers[i - 1]
@@ -130,7 +130,7 @@ class Net(object):
             elif layerType == 'mex':        obj = MexLayer(layer)
             elif layerType == 'add':        obj = AddLayer(layer)
             elif layerType == 'capsule':    pass
-            else: print 'Unrecognized layer type'
+            else: print('Unrecognized layer type')
 
             if obj: self.layers.append(obj)
 
@@ -138,7 +138,7 @@ class Net(object):
         # Forward propogate through the network. 
         # Trainer will pass is_training=True
         activation = self.layers[0].forward(V, is_training)
-        for i in xrange(1, len(self.layers)):
+        for i in range(1, len(self.layers)):
             activation = self.layers[i].forward(activation, is_training)
         return activation
 
@@ -150,7 +150,7 @@ class Net(object):
     def backward(self, y):
         # Backprop: compute gradients wrt all parameters
         loss = self.layers[-1].backward(y) #last layer assumed loss layer
-        for i in xrange(len(self.layers) - 2, 0, -1): # first layer assumed input
+        for i in range(len(self.layers) - 2, 0, -1): # first layer assumed input
             self.layers[i].backward()
         return loss
 
@@ -166,13 +166,22 @@ class Net(object):
         return p.index(max(p))
 
     def toJSON(self):
+#         for layer in self.layers:
+#         print(self.layers[2].toJSON())
         return { 'layers': [ layer.toJSON() for layer in self.layers ] }
 
     def fromJSON(self, json):
         self.layers = []
         for layer in json['layers']:
-            layerType = layer['type']
+            layerType = layer['layer_type'] # Changed by AA
             obj = None
+#             print(layer)
+#             try:
+#                 print(layer['num_neurons'])
+#             except Exception:
+#                 layer['num_neurons']=None;
+            
+            layer['json']=True;
 
             if   layerType == 'fc':         obj = FullyConnectedLayer(layer)
             elif layerType == 'lrn':        obj = LocalResponseNormalizationLayer(layer)
@@ -189,6 +198,6 @@ class Net(object):
             elif layerType == 'svm':        obj = SVMLayer(layer)
             elif layerType == 'sim':        obj = SimilarityLayer(layer)
             elif layerType == 'mex':        obj = MexLayer(layer)
-
+            
             obj.fromJSON(layer)
             self.layers.append(obj)

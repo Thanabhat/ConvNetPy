@@ -73,8 +73,10 @@ class Trainer(object):
                         self.xsum.append([])
 
             # Perform an update for all sets of weights
-            for i in xrange(len(pglist)):
-                pg = pglist[i] # param, gradient, other options in future (custom learning rate etc.)
+#             for i in range(len(pglist)):
+            selfro=self.ro
+            for i, pg in enumerate(pglist):
+#                 pg = pglist[i] # param, gradient, other options in future (custom learning rate etc.)
                 p = pg['params']
                 g = pg['grads']
 
@@ -83,13 +85,13 @@ class Trainer(object):
                 l1_decay_mul = getopt(pg, 'l1_decay_mul', 1.0)
                 l2_decay = self.l2_decay * l2_decay_mul
                 l1_decay = self.l1_decay * l1_decay_mul
-                for j in xrange(len(p)):
-                    l2_decay_loss += l2_decay * p[j] * p[j] / 2.0 # accumulate weight decay loss
-                    l1_decay_loss += l1_decay * abs(p[j])
-                    l1grad = l1_decay * (1 if p[j] > 0 else -1)
-                    l2grad = l2_decay * p[j]
+                for j, pj in enumerate(p):
+                    l2_decay_loss += l2_decay * pj * pj / 2.0 # accumulate weight decay loss
+                    l1_decay_loss += l1_decay * abs(pj)
+                    l1grad = l1_decay * (1 if pj > 0 else -1)
+                    l2grad = l2_decay * pj
                     gij = (l2grad + l1grad + g[j]) / float(self.batch_size) # raw batch gradient
-
+                    gijsq = gij*gij;
                     try:
                         gsumi = self.gsum[i]
                         xsumi = self.xsum[i]
@@ -105,13 +107,13 @@ class Trainer(object):
                         so the gradient is not accumulated over the entire history of the run. 
                         It's also referred to as Idea #1 in Zeiler paper on Adadelta.
                         """
-                        gsumi[j] = self.ro * gsumi[j] + (1 - self.ro) * gij * gij
+                        gsumi[j] = selfro * gsumi[j] + (1 - selfro) * gijsq
                         dx = - self.learning_rate / sqrt(gsumi[j] + self.eps) * gij
                         p[j] += dx
                     elif self.method == 'adadelta':
-                        gsumi[j] = self.ro * gsumi[j] + (1 - self.ro) * gij * gij
+                        gsumi[j] = selfro * gsumi[j] + (1 - selfro) * gijsq
                         dx = - sqrt((xsumi[j] + self.eps) / (gsumi[j] + self.eps)) * gij
-                        xsumi[j] = self.ro * gsumi[j] + (1 - self.ro) * dx * dx
+                        xsumi[j] = selfro * gsumi[j] + (1 - selfro) * dx * dx
                         p[j] += dx
                     else: # SGD
                         if self.momentum > 0.0: # Momentum update
@@ -119,7 +121,7 @@ class Trainer(object):
                             gsumi[j] = dx                                            # backup for next iteration
                             p[j] += dx                                               # apply gradient
                         else: # Vanilla SGD
-                            p[j] += - self.learning_rate * gij
+                            p[j] -= self.learning_rate * gij
                     g[j] = 0.0 # zero out gradient so that we can begin accumulating anew
 
         return {

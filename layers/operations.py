@@ -23,7 +23,7 @@ class AddLayer(object):
 
         A = Vol(1, 1, self.num_inputs, 0.0)
         applied = 0
-        for n in xrange(self.num_inputs):
+        for n in range(self.num_inputs):
             if n < self.skip:
                 A.w[n] = V.w[n]
             else:

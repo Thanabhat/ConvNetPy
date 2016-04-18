@@ -35,17 +35,17 @@ class PoolLayer(object):
         A = Vol(self.out_sx, self.out_sy, self.out_depth, 0.0)
         switch_counter = 0
 
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             x = -self.pad
             y = -self.pad
-            for ax in xrange(self.out_sx):
+            for ax in range(self.out_sx):
                 y = -self.pad
-                for ay in xrange(self.out_sy):
+                for ay in range(self.out_sy):
                     # convolve centered at this particular location
                     max_a = -99999
                     win_x, win_y = -1, -1
-                    for fx in xrange(self.sx):
-                        for fy in xrange(self.sy):
+                    for fx in range(self.sx):
+                        for fy in range(self.sy):
                             off_x = x + fx
                             off_y = y + fy
                             if off_y >= 0 and off_y < V.sy \
@@ -76,12 +76,12 @@ class PoolLayer(object):
         A = self.out_act # computed in forward pass
 
         n = 0
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             x = -self.pad
             y = -self.pad
-            for ax in xrange(self.out_sx):
+            for ax in range(self.out_sx):
                 y = -self.pad
-                for ay in xrange(self.out_sy):
+                for ay in range(self.out_sy):
                     chain_grad = self.out_act.get_grad(ax, ay, d)
                     V.add_grad(self.switch_x[n], self.switch_y[n], d, chain_grad)
                     n += 1

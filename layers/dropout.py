@@ -24,7 +24,7 @@ class DropoutLayer(object):
 
         if is_training: 
             # do dropout
-            for i in xrange(N):
+            for i in range(N):
                 if random() < self.drop_prob: # drop
                     V2.w[i] = 0.0 
                     self.dropped[i] = True
@@ -32,7 +32,7 @@ class DropoutLayer(object):
                     self.dropped[i] = False
         else: 
             # scale the activations during prediction
-            for i in xrange(N):
+            for i in range(N):
                 V2.w[i] *= self.drop_prob
 
         self.out_act = V2
@@ -43,7 +43,7 @@ class DropoutLayer(object):
         chain_grad = self.out_act
         N = len(V.w)
         V.dw = zeros(N) # zero out gradient wrt data
-        for i in xrange(N):
+        for i in range(N):
             if not self.dropped[i]:
                 V.dw[i] = chain_grad.dw[i] # copy over the gradient
 

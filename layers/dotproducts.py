@@ -35,7 +35,7 @@ class ConvLayer(object):
         self.layer_type = 'conv'
 
         bias = getopt(opt, 'bias_pref', 0.0)
-        self.filters = [ Vol(self.sx, self.sy, self.in_depth) for i in xrange(self.out_depth) ]
+        self.filters = [ Vol(self.sx, self.sy, self.in_depth) for i in range(self.out_depth) ]
         self.biases = Vol(1, 1, self.out_depth, bias)
 
     def forward(self, V, is_training):
@@ -46,23 +46,23 @@ class ConvLayer(object):
         v_sy = V.sy
         xy_stride = self.stride
 
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             f = self.filters[d]
             x = -self.pad
             y = -self.pad
 
-            for ay in xrange(self.out_sy):
+            for ay in range(self.out_sy):
                 x = -self.pad
-                for ax in xrange(self.out_sx):
+                for ax in range(self.out_sx):
                     # convolve centered at this particular location
                     sum_a = 0.0
-                    for fy in xrange(f.sy):
+                    for fy in range(f.sy):
                         off_y = y + fy
-                        for fx in xrange(f.sx):
+                        for fx in range(f.sx):
                             # coordinates in the original input array coordinates
                             off_x = x + fx
                             if off_y >= 0 and off_y < V.sy and off_x >= 0 and off_x < V.sx:
-                                for fd in xrange(f.depth):
+                                for fd in range(f.depth):
                                     sum_a += f.w[((f.sx * fy) + fx) * f.depth + fd] \
                                     * V.w[((V.sx * off_y) + off_x) * V.depth + fd]
 
@@ -84,24 +84,24 @@ class ConvLayer(object):
         V_sy = V.sy
         xy_stride = self.stride
         
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             f = self.filters[d]
             x = -self.pad
             y = -self.pad
-            for ay in xrange(self.out_sy):
+            for ay in range(self.out_sy):
                 x = -self.pad
-                for ax in xrange(self.out_sx):
+                for ax in range(self.out_sx):
                     # convolve and add up the gradients
                     chain_grad = self.out_act.get_grad(ax, ay, d) # gradient from above, from chain rule
-                    for fy in xrange(f.sy):
+                    for fy in range(f.sy):
                         off_y = y + fy
-                        for fx in xrange(f.sx):
+                        for fx in range(f.sx):
                             off_x = x + fx
                             if off_y >= 0 and off_y < V_sy and off_x >= 0 and off_x < V_sx:
                                 # forward prop calculated: a += f.get(fx, fy, fd) * V.get(ox, oy, fd)
                                 #f.add_grad(fx, fy, fd, V.get(off_x, off_y, fd) * chain_grad)
                                 #V.add_grad(off_x, off_y, fd, f.get(fx, fy, fd) * chain_grad)
-                                for fd in xrange(f.depth):
+                                for fd in range(f.depth):
                                     ix1 = ((V.sx * off_y) + off_x) * V.depth + fd
                                     ix2 = ((f.sx * fy) + fx) * f.depth + fd
                                     f.dw[ix2] += V.w[ix1] * chain_grad
@@ -113,7 +113,7 @@ class ConvLayer(object):
 
     def getParamsAndGrads(self):
         response = []
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             response.append({
                 'params': self.filters[d].w,
                 'grads': self.filters[d].dw,
@@ -169,18 +169,36 @@ class FullyConnectedLayer(object):
     """
 
     def __init__(self, opt={}):
-        self.out_depth = opt['num_neurons']
+#         print(opt)
+        if 'json' in opt:
+            self.out_depth = opt['out_depth']
+            self.num_inputs = opt['num_inputs']
+            self.out_sx = opt['out_sx']
+            self.out_sy = opt['out_sy']
+        else:
+            self.out_depth = opt['num_neurons']
+            self.num_inputs = opt['in_sx'] * opt['in_sy'] * opt['in_depth']
+            self.out_sx = 1
+            self.out_sy = 1
         self.l1_decay_mul = getopt(opt, 'l1_decay_mul', 0.0)
         self.l2_decay_mul = getopt(opt, 'l2_decay_mul', 1.0)
 
-        self.num_inputs = opt['in_sx'] * opt['in_sy'] * opt['in_depth']
-        self.out_sx = 1
-        self.out_sy = 1
         self.layer_type = 'fc'
 
         bias = getopt(opt, 'bias_pref', 0.0)
-        self.filters = [ Vol(1, 1, self.num_inputs) for i in xrange(self.out_depth) ]
-        self.biases = Vol(1, 1, self.out_depth, bias)
+        if 'json' in opt:
+            self.biases = Vol(0,0,0,0);
+            self.biases.fromJSON(opt['biases'])
+            self.filters = []
+#             print(opt['filters'])
+            for i in range(len(opt['filters'])):
+                v = Vol(0,0,0,0);
+#                 print(opt['filters'][i]['w'])
+                v.fromJSON(opt['filters'][i]);
+                self.filters.append(v);
+        else:
+            self.filters = [ Vol(1, 1, self.num_inputs) for i in range(self.out_depth) ]
+            self.biases = Vol(1, 1, self.out_depth, bias)
 
     def forward(self, V, in_training):
         self.in_act = V
@@ -188,10 +206,10 @@ class FullyConnectedLayer(object):
         Vw = V.w
 
         # dot(W, x) + b
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             sum_a = 0.0
             fiw = self.filters[i].w
-            for d in xrange(self.num_inputs):
+            for d in range(self.num_inputs):
                 sum_a += Vw[d] * fiw[d]
             sum_a += self.biases.w[i]
             A.w[i] = sum_a
@@ -204,11 +222,11 @@ class FullyConnectedLayer(object):
         V.dw = zeros(len(V.w)) # zero out gradient
 
         # compute gradient wrt weights and data
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             fi = self.filters[i]
             chain_grad = self.out_act.dw[i]
 
-            for d in xrange(self.num_inputs):
+            for d in range(self.num_inputs):
                 V.dw[d] += fi.w[d] * chain_grad #grad wrt input data
                 fi.dw[d] += V.w[d] * chain_grad #grad wrt params
 
@@ -216,7 +234,7 @@ class FullyConnectedLayer(object):
 
     def getParamsAndGrads(self):
         response = []
-        for d in xrange(self.out_depth):
+        for d in range(self.out_depth):
             response.append({
                 'params': self.filters[d].w,
                 'grads': self.filters[d].dw,

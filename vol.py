@@ -24,7 +24,7 @@ class Vol(object):
 
             self.w = zeros(self.depth)
             self.dw = zeros(self.depth)
-            self.w = [ sx[i] for i in xrange(self.depth) ]
+            self.w = [ sx[i] for i in range(self.depth) ]
         else: 
             # We were given dimensions of the vol           
             self.sx = sx
@@ -39,7 +39,7 @@ class Vol(object):
                 # variance of every neuron, otherwise neurons with a lot
                 # of incoming connections have outputs of larger variance
                 scale = sqrt(1.0 / (self.sx * self.sy * self.depth))
-                self.w = [ randn(0.0, scale) for i in xrange(n) ]
+                self.w = [ randn(0.0, scale) for i in range(n) ]
             else:
                 self.w = [c] * n
 
@@ -90,11 +90,11 @@ class Vol(object):
         return V
 
     def addFrom(self, V):
-        for i in xrange(len(self.w)):
-            self.w[i] += V.w[i]
+        for i in range(len(self.w)):
+            self.w[i] += V[i]
 
     def addFromScaled(self, V, a):
-        for i in xrange(len(self.w)):
+        for i in range(len(self.w)):
             self.w[i] += a * V.w[i]
 
     def setConst(self, a):

@@ -50,7 +50,7 @@ class SoftmaxLayer(object):
         x = self.in_act
         x.dw = zeros(len(x.w))
 
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             indicator = float(i == y)
             mul = - (indicator - self.es[i])
             x.dw[i] = mul
@@ -89,11 +89,18 @@ class RegressionLayer(object):
     """
 
     def __init__(self, opt={}):
-        self.num_inputs = opt['in_sx'] * opt['in_sy'] * opt['in_depth']
-        self.out_depth = self.num_inputs
-        self.out_sx = 1
-        self.out_sy = 1
-        self.layer_type = 'regression'
+        if 'json' in opt:
+            self.out_depth = opt['out_depth']
+            self.out_sx = opt['out_sx']
+            self.out_sy = opt['out_sy']
+            self.layer_type = opt['layer_type']
+            self.num_inputs = opt['num_inputs']
+        else:
+            self.num_inputs = opt['in_sx'] * opt['in_sy'] * opt['in_depth']
+            self.out_depth = self.num_inputs
+            self.out_sx = 1
+            self.out_sy = 1
+            self.layer_type = 'regression'
 
     def forward(self, V, is_training):
         self.in_act = V
@@ -108,7 +115,7 @@ class RegressionLayer(object):
         loss = 0.0
 
         if type(y) == list:
-            for i in xrange(self.out_depth):
+            for i in range(self.out_depth):
                 dy = x.w[i] - y[i]
                 x.dw[i] = dy
                 loss += 2 * dy * dy
@@ -166,7 +173,7 @@ class SVMLayer(object):
         yscore = x.w[y]
         margin = 1.0
         loss = 0.0
-        for i in xrange(self.out_depth):
+        for i in range(self.out_depth):
             if -yscore + x.w[i] + margin > 0:
                 # Hinge loss: http://en.wikipedia.org/wiki/Hinge_loss
                 x.dw[i] += 1

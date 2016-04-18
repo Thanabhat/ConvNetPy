@@ -25,7 +25,10 @@ and its job is to set the outputs to maximize the expected reward
 """
 
 class Brain(object):
-
+    """No idea what I'm doing; just adding this and hoping it works"""
+    random_action_distribution=[];
+    
+    
     def __init__(self, num_states, num_actions, opt={}):
         """
         in number of time steps, of temporal memory
@@ -65,12 +68,12 @@ class Brain(object):
             self.random_action_distribution = opt['random_action_distribution']
 
             if len(self.random_action_distribution) != num_actions:
-                print 'TROUBLE. random_action_distribution should be same length as num_actions.'
+                print('TROUBLE. random_action_distribution should be same length as num_actions.')
 
             a = self.random_action_distribution
             s = sum(a)
             if abs(s - 1.0) > 0.0001:
-                print 'TROUBLE. random_action_distribution should sum to 1!'
+                print('TROUBLE. random_action_distribution should sum to 1!')
             else:
                 self.random_action_distribution = []
 
@@ -99,15 +102,15 @@ class Brain(object):
             layers = opt['layers']
 
             if len(layers) < 2:
-                print 'TROUBLE! must have at least 2 layers'
+                print('TROUBLE! must have at least 2 layers')
             if layers[0]['type'] != 'input':
-                print 'TROUBLE! first layer must be input layer!'
+                print('TROUBLE! first layer must be input layer!')
             if layers[-1]['type'] != 'regression':
-                print 'TROUBLE! last layer must be input regression!'
+                print('TROUBLE! last layer must be input regression!')
             if layers[0]['out_depth'] * layers[0]['out_sx'] * layers[0]['out_sy'] != self.net_inputs:
-                print 'TROUBLE! Number of inputs must be num_states * temporal_window + num_actions * temporal_window + num_states!'
+                print('TROUBLE! Number of inputs must be num_states * temporal_window + num_actions * temporal_window + num_states!')
             if layers[-1]['num_neurons'] != self.num_actions:
-                print 'TROUBLE! Number of regression neurons should be num_actions!'
+                print('TROUBLE! Number of regression neurons should be num_actions!')
         else:
             #create a very simple neural net by default
             layers.append({'type': 'input', 'out_sx': 1, 'out_sy': 1, 'out_depth': self.net_inputs})
@@ -145,13 +148,13 @@ class Brain(object):
         or less likely at "rest"/default state.
         """
 
-        if len(random_action_distribution) == 0:
+        if len(self.random_action_distribution) == 0:
             return randi(0, self.num_actions)
         else:
             #okay, lets do some fancier sampling
             p = randf(0, 1.0)
             cumprob = 0.0
-            for k in xrange(self.num_actions):
+            for k in range(self.num_actions):
                 cumprob += self.random_action_distribution[k]
                 if p < cumprob:
                     return k
@@ -166,7 +169,7 @@ class Brain(object):
         action_values = self.value_net.forward(V)
         weights = action_values.w
         max_val = max(weights)
-        max_k = weights.index(maxval)
+        max_k = weights.index(max_val) # Modified
         return {
             'action': max_k,
             'value': max_val
@@ -182,7 +185,7 @@ class Brain(object):
         w.extend(xt) #start with current state
         #and now go backwards and append states and actions from history temporal_window times
         n = self.window_size
-        for k in xrange(self.temporal_window):
+        for k in range(self.temporal_window):
             index = n - 1 - k
             w.extend(self.state_window[index]) #state
 
@@ -238,6 +241,7 @@ class Brain(object):
         self.state_window.append(input_array)
         self.action_window.pop(0)
         self.action_window.append(action)
+        return action
 
     def backward(self, reward):
         self.latest_reward = reward
@@ -272,15 +276,16 @@ class Brain(object):
         if len(self.experience) > self.start_learn_threshold:
             avcost = 0.0
 
-            for k in xrange(self.tdtrainer.batch_size):
+            for k in range(self.tdtrainer.batch_size):
                 re = randi(0, len(self.experience))
                 e = self.experience[re]
                 x = Vol(1, 1, self.net_inputs)
                 x.w = e.state0
                 maxact = self.policy(e.state1)
-                r = e.reward0 + self.gamma * maxact.value
+                r = e.reward0 + self.gamma * maxact['value']
                 ystruct = {'dim': e.action0, 'val': r}
                 stats = self.tdtrainer.train(x, ystruct)
+#                 print(stats['accuracy'])
                 avcost += stats['loss']
 
             avcost /= self.tdtrainer.batch_size

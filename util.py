@@ -33,7 +33,7 @@ def randn(mu, std):
 
 # Array Utilities
 
-import numpy
+# import numpy
 def zeros(n=None):
     if not n:
         return []
@@ -69,7 +69,7 @@ def maxmin(w):
 # Create random permutations of numbers, in range [0 ... n-1]
 def randperm(n):
     i, j, temp = n - 1, 0, None
-    array = range(n)
+    array = list(range(n))
     while i:
         j = int(floor(random() * (i + 1)))
         temp = array[i]
@@ -87,14 +87,14 @@ def weightedSample(lst=None, prob=None):
 
     if type(lst) != list:
         try:
-            prob = lst.values()
-            lst = lst.keys()
+            prob = list(lst.values())
+            lst = list(lst.keys())
         except:
             return
 
     p = randf(0, 1.0)
     cumprob = 0.0
-    for k in xrange(len(lst)):
+    for k in range(len(lst)):
         cumprob += prob[k]
         if p < cumprob:
             return lst[k]
@@ -106,7 +106,7 @@ def getopt(opt, field_name, default_value):
 # Utilities for saving/loading json to/from a file
 
 def saveJSON(filename, data):
-    print 'Saving to: {}'.format(filename)
+    print('Saving to: {}'.format(filename))
     with open(filename, 'w') as outfile:
         json.dump(data, outfile)
 
