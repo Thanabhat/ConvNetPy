@@ -1,4 +1,4 @@
-from util import zeros
+from ..util import zeros
 
 class LocalResponseNormalizationLayer(object):
 

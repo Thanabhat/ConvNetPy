@@ -1,5 +1,5 @@
-from util import getopt, zeros
-from vol import Vol
+from ..util import getopt, zeros
+from ..vol import Vol
 from math import floor
 
 """This file contains all layers that do dot products with input"""

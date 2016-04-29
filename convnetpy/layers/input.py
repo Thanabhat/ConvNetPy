@@ -1,4 +1,4 @@
-from util import getopt
+from ..util import getopt
 
 class InputLayer(object):
 

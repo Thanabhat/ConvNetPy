@@ -1,5 +1,5 @@
-from util import getopt
-from vol import Vol
+from ..util import getopt
+from ..vol import Vol
 
 """
 Layers that perform an operation of inputs.

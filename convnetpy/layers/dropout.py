@@ -1,4 +1,5 @@
-from util import getopt, zeros
+from ..util import getopt
+from ..util import zeros
 from random import random
 
 class DropoutLayer(object):
