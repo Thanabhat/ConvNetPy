@@ -14,7 +14,7 @@ setup(name='ConvNetPy',
       version='1.0',
       description='Python port of ConvNetJS',
       long_description=long_description,
-      license='MIT'
+      license='MIT',
       url='https://github.com/Aaronduino/ConvNetPy',
       packages=['convnetpy', 'convnetpy.layers'],
      )
