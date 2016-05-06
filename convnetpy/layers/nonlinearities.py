@@ -39,7 +39,7 @@ class ReluLayer(object):
         V2 = self.out_act
         N = len(V.w)
         V.dw = zeros(N) # zero out gradient wrt data
-        for i in xrange(N):
+        for i in range(N):
             if V2.w[i] <= 0: # threshold
                 V.dw[i] = 0
             else:
