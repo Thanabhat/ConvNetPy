@@ -30,7 +30,7 @@ class ReluLayer(object):
     def forward(self, V, is_training=False):
         self.in_act = V
         V2 = V.clone()
-        V2.w = map(relu, V.w)
+        V2.w = list(map(relu, V.w))
         self.out_act = V2
         return self.out_act
 
@@ -79,7 +79,7 @@ class SigmoidLayer(object):
     def forward(self, V, is_training):
         self.in_act = V
         V2 = V.cloneAndZero()
-        V2.w = map(sigmoid, V.w)
+        V2.w = list(map(sigmoid, V.w))
         self.out_act = V2
         return self.out_act
 
@@ -88,7 +88,7 @@ class SigmoidLayer(object):
         V2 = self.out_act
         N = len(V.w)
         V.dw = zeros(N) # zero out gradient wrt data
-        for i in xrange(N):
+        for i in range(N):
             v2wi = V2.w[i]
             V.dw[i] = v2wi * (1.0 - v2wi) * V2.dw[i]
 
@@ -132,7 +132,7 @@ class MaxoutLayer(object):
         V2 = Vol(self.out_sx, self.out_sy, self.out_depth, 0.0)
 
         if self.out_sx == 1 and self.out_sy == 1:
-            for i in xrange(N):
+            for i in range(N):
                 offset = i * self.group_size
                 m = max(V.w[offset:])
                 index = V.w[offset:].index(m)
@@ -140,9 +140,9 @@ class MaxoutLayer(object):
                 self.switches[i] = offset + index 
         else:
             switch_counter = 0
-            for x in xrange(V.sx):
-                for y in xrange(V.sy):
-                    for i in xrange(N):
+            for x in range(V.sx):
+                for y in range(V.sy):
+                    for i in range(N):
                         ix = i * self.group_size
                         elem = V.get(x, y, ix)
                         elem_i = 0
@@ -171,9 +171,9 @@ class MaxoutLayer(object):
                 V.dw[self.switches[i]] = chain_grad
         else:
             switch_counter = 0
-            for x in xrange(V2.sx):
-                for y in xrange(V2.sy):
-                    for i in xrange(N):
+            for x in range(V2.sx):
+                for y in range(V2.sy):
+                    for i in range(N):
                         chain_grad = V2.get_grad(x,y,i)
                         V.set_grad(x, y, self.switches[n], chain_grad)
                         switch_counter += 1
@@ -215,7 +215,7 @@ class TanhLayer(object):
     def forward(self, V, is_training):
         self.in_act = V
         V2 = V.cloneAndZero()
-        V2.w = map(tanh, V.w)
+        V2.w = list(map(tanh, V.w))
         self.out_act = V2
         return self.out_act
 
@@ -224,7 +224,7 @@ class TanhLayer(object):
         V2 = self.out_act
         N = len(V.w)
         V.dw = zeros(N) # zero out gradient wrt data
-        for i in xrange(N):
+        for i in range(N):
             v2wi = V2.w[i]
             V.dw[i] = (1.0 - v2wi * v2wi) * V2.dw[i]
 
