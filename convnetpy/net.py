@@ -1,12 +1,12 @@
-from layers.input          import InputLayer
-from layers.dropout        import DropoutLayer
-from layers.nonlinearities import ReluLayer, SigmoidLayer, MaxoutLayer, TanhLayer
-from layers.loss           import SoftmaxLayer, RegressionLayer, SVMLayer
-from layers.normalization  import LocalResponseNormalizationLayer
-from layers.pooling        import PoolLayer
-from layers.dotproducts    import ConvLayer, FullyConnectedLayer
-from layers.similarity     import SimilarityLayer, MexLayer
-from layers.operations     import AddLayer
+from .layers.input          import InputLayer
+from .layers.dropout        import DropoutLayer
+from .layers.nonlinearities import ReluLayer, SigmoidLayer, MaxoutLayer, TanhLayer
+from .layers.loss           import SoftmaxLayer, RegressionLayer, SVMLayer
+from .layers.normalization  import LocalResponseNormalizationLayer
+from .layers.pooling        import PoolLayer
+from .layers.dotproducts    import ConvLayer, FullyConnectedLayer
+from .layers.similarity     import SimilarityLayer, MexLayer
+from .layers.operations     import AddLayer
 
 class Net(object):
 

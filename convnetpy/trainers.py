@@ -1,4 +1,4 @@
-from util import *
+from .util import *
 from time import time
 from math import sqrt
 
