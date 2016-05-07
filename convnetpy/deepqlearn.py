@@ -79,11 +79,10 @@ class Brain(object):
 
         """
         states that go into neural net to predict optimal action look as
-        x0,a0,x1,a1,x2,a2,...xt
-        this variable controls the size of that temporal window. Actions are
-        encoded as 1-of-k hot vectors
+        x0,x1,x2,...xt
+        this variable controls the size of that temporal window.
         """
-        self.net_inputs = num_states * self.temporal_window + num_actions * self.temporal_window + num_states        
+        self.net_inputs = num_states * (self.temporal_window + 1)
         self.num_states = num_states
         self.num_actions = num_actions
         self.window_size = max(self.temporal_window, 2) #must be at least 2, but if we want more context even more
@@ -108,7 +107,7 @@ class Brain(object):
             if layers[-1]['type'] != 'regression':
                 print('TROUBLE! last layer must be input regression!')
             if layers[0]['out_depth'] * layers[0]['out_sx'] * layers[0]['out_sy'] != self.net_inputs:
-                print('TROUBLE! Number of inputs must be num_states * temporal_window + num_actions * temporal_window + num_states!')
+                print('TROUBLE! Number of inputs must be num_states * (self.temporal_window + 1)!')
             if layers[-1]['num_neurons'] != self.num_actions:
                 print('TROUBLE! Number of regression neurons should be num_actions!')
         else:
@@ -188,12 +187,6 @@ class Brain(object):
         for k in range(self.temporal_window):
             index = n - 1 - k
             w.extend(self.state_window[index]) #state
-
-            #action, encoded as 1-of-k indicator vector. We scale it up a bit because
-            #we dont want weight regularization to undervalue this information, as it only exists once
-            action1ofk = zeros(self.num_actions)
-            action1ofk[index] = 1.0 * self.num_states
-            w.extend(action1ofk)
 
         return w
 
