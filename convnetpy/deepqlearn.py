@@ -56,6 +56,9 @@ class Brain(object):
         """what epsilon value do we bottom out on? 0.0 => purely deterministic policy at end"""
         self.epsilon_min = getopt(opt, 'epsilon_min', 0.05)
 
+        """what epsilon value do we max out on? 1.0 => purely random action"""
+        self.epsilon_max = getopt(opt, 'epsilon_max', 1.0)
+
         """what epsilon to use at test time? (i.e. when learning is disabled)"""
         self.epsilon_test_time = getopt(opt, 'epsilon_test_time', 0.01)
 
@@ -96,7 +99,7 @@ class Brain(object):
         if 'layers' in opt:
             """
             this is an advanced usage feature, because size of the input to the network, and number of
-            actions must check out. 
+            actions must check out.
             """
             layers = opt['layers']
 
@@ -142,7 +145,7 @@ class Brain(object):
     def random_action(self):
         """
         a bit of a helper function. It returns a random action
-        we are abstracting this away because in future we may want to 
+        we are abstracting this away because in future we may want to
         do more sophisticated things. For example some actions could be more
         or less likely at "rest"/default state.
         """
@@ -167,6 +170,7 @@ class Brain(object):
         V = Vol(s)
         action_values = self.value_net.forward(V)
         weights = action_values.w
+        # print(weights) # for debugging
         max_val = max(weights)
         max_k = weights.index(max_val) # Modified
         return {
@@ -202,7 +206,7 @@ class Brain(object):
             if self.learning:
                 #compute epsilon for the epsilon-greedy policy
                 self.epsilon = min(
-                    1.0,
+                    self.epsilon_max,
                     max(
                         self.epsilon_min,
                         1.0 - \
@@ -212,15 +216,17 @@ class Brain(object):
                 )
             else:
                 self.epsilon = self.epsilon_test_time #use test-time value
-            
+
             rf = randf(0, 1)
             if rf < self.epsilon:
                 #choose a random action with epsilon probability
                 action = self.random_action()
+                # print('age', self.age, 'random action: %d' % action) # for debugging
             else:
                 #otherwise use our policy to make decision
                 maxact = self.policy(net_input)
                 action = maxact['action']
+                # print('age', self.age, 'policy action: %d' % action) # for debugging
         else:
             #pathological case that happens first few iterations
             #before we accumulate window_size inputs
@@ -236,13 +242,13 @@ class Brain(object):
         self.action_window.append(action)
         return action
 
-    def backward(self, reward):
+    def giveReward(self, reward):
         self.latest_reward = reward
         self.average_reward_window.add(reward)
         self.reward_window.pop(0)
         self.reward_window.append(reward)
 
-        if not self.learning: 
+        if not self.learning:
             return
 
         self.age += 1
@@ -264,6 +270,7 @@ class Brain(object):
                 ri = randi(0, self.experience_size)
                 self.experience[ri] = e
 
+    def train(self):
         #learn based on experience, once we have some samples to go on
         #this is where the magic happens...
         if len(self.experience) > self.start_learn_threshold:
@@ -283,3 +290,10 @@ class Brain(object):
 
             avcost /= self.tdtrainer.batch_size
             self.average_loss_window.add(avcost)
+
+    def backward(self, reward):
+        self.giveReward(reward)
+        self.train()
+
+    def clearExperience(self):
+        self.experience = []

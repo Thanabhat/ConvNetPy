@@ -1,4 +1,5 @@
 from ..util import getopt
+from ..vol import Vol
 
 class InputLayer(object):
 
@@ -9,8 +10,12 @@ class InputLayer(object):
         self.layer_type = 'input'
 
     def forward(self, V, is_training):
-        self.in_act = V        
-        self.out_act = V
+        self.in_act = V
+        A = Vol(self.out_sx, self.out_sy, self.out_depth, 0.0)
+        n = len(V.w)
+        for i in range(n):
+            A.w[i] = V.w[i]
+        self.out_act = A
         return self.out_act
 
     def backward(self):
