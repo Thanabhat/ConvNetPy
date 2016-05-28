@@ -1,5 +1,5 @@
-from ..util import getopt
-from ..util import zeros
+from convnetpy.util import getopt
+from convnetpy.util import zeros
 from random import random
 
 class DropoutLayer(object):

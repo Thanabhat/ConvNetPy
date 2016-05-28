@@ -1,4 +1,4 @@
-from ..util import zeros
+from convnetpy.util import zeros
 
 class LocalResponseNormalizationLayer(object):
 

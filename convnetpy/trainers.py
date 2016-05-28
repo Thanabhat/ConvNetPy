@@ -1,4 +1,4 @@
-from .util import *
+from convnetpy.util import *
 from time import time
 from math import sqrt
 
@@ -91,7 +91,7 @@ class Trainer(object):
                     l1grad = l1_decay * (1 if pj > 0 else -1)
                     l2grad = l2_decay * pj
                     gij = (l2grad + l1grad + g[j]) / float(self.batch_size) # raw batch gradient
-                    gijsq = gij*gij;
+                    gijsq = gij*gij
                     try:
                         gsumi = self.gsum[i]
                         xsumi = self.xsum[i]

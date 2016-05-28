@@ -1,7 +1,7 @@
-from .util import *
-from .net import Net
-from .trainers import Trainer
-from .vol import Vol
+from convnetpy.util import *
+from convnetpy.net import Net
+from convnetpy.trainers import Trainer
+from convnetpy.vol import Vol
 
 """
 An agent is in state0 and does action0

@@ -1,5 +1,5 @@
-from .vol import Vol
-from .util import randi
+from convnetpy.vol import Vol
+from convnetpy.util import randi
 
 def augment(V, crop, grayscale=False):
     # note assumes square outputs of size crop x crop

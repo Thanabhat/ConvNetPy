@@ -1,4 +1,4 @@
-from .util import *
+from convnetpy.util import *
 from math import sqrt
 
 class Vol(object):

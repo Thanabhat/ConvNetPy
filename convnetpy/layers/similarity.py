@@ -1,5 +1,5 @@
-from ..util import getopt, zeros
-from ..vol import Vol
+from convnetpy.util import getopt, zeros
+from convnetpy.vol import Vol
 from math import sqrt, log, exp
 
 class SimilarityLayer(object):

@@ -1,5 +1,5 @@
-from ..util import getopt
-from ..vol import Vol
+from convnetpy.util import getopt
+from convnetpy.vol import Vol
 
 """
 Layers that perform an operation of inputs.
